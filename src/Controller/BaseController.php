@@ -11,5 +11,12 @@ class BaseController
     {
         $this->controller = $controller;
         $this->session = $session;
+        $this->beforeFilter();
+    }
+    public function beforeFilter()
+    {
+        if ($this->session->isUserLoggedIn(true)) {
+            redirect('/src/View/home/', false);
+        }
     }
 }

@@ -7,8 +7,8 @@ class Session
     private $userIsLoggedIn = false;
     public function __construct()
     {
-        $this->flashMsg();
         $this->userLoginSetup();
+        $this->flashMsg(true);
     }
 
     public function isUserLoggedIn()
@@ -33,17 +33,23 @@ class Session
         header("Location: /");
         exit;
     }
-    public function inputMessage($type = '', $msg = '')
+    public function inputMessage($type = '', $msg = '', $redirect = false)
     {
         if (!empty($msg)) {
-            $_SESSION['msg'][$type] = $msg;
+            if ($redirect) {
+                $_SESSION['msg'][$type] = $msg;
+            } else {
+                $this->message[$type] = $msg;
+            }
         }
     }
     public function flashMsg()
     {
         if (isset($_SESSION['msg'])) {
             $this->message = $_SESSION['msg'];
-            unset($_SESSION['msg']);
+                unset($_SESSION['msg']);
+        } else {
+            return $this->message;
         }
     }
 }

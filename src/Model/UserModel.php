@@ -30,7 +30,7 @@ class UserModel extends AppModel
 
         return false;
     }
-     /**
+    /**
      * User checExists method
      * check existing record of a user
      * @param string $field table field
@@ -44,4 +44,18 @@ class UserModel extends AppModel
 
         return !empty($user) ? true : false;
     }
+    /**
+     * User authenticate method
+     * authenticate user record
+     * @param string $username table field
+     * @param string $password table field
+     * @return array user or bool false
+    */
+    public function authenticate($username, $password)
+    {
+        $this->database->query("SELECT * FROM users WHERE username = '{$username}' and password = '{$password}'");
+        $user = $this->database->resultset();
+        return !empty($user) ? $user : false;
+    }
+
 }

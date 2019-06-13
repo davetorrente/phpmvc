@@ -13,8 +13,26 @@ class UserController extends BaseController
         parent::__construct($session, $this);
         $this->User = new UserModel($database);
     }
+    public function beforeFilter()
+    {
+        parent::beforeFilter();
+    }
+    /**
+     * User login method
+     * login existing user account
+     * session message to know login status
+    */
     public function login()
     {
+        if (isset($_POST['login'])) {
+            $user = $this->User->authenticate($_POST['username'], md5($_POST['password']));
+            if ($user !== false) {
+                $this->session->login($user[0]['id']);
+                redirect('/src/View/home/', false);
+            } else {
+                $this->session->inputMessage("error", "Invalid username or password");
+            }
+        }
     }
     /**
      * User register method
@@ -32,7 +50,8 @@ class UserController extends BaseController
                     $this->session->inputMessage("error", "Username is already exists");
                 } else {
                     if ($this->User->create($_POST)) {
-                        $this->session->inputMessage("success", "Registration Success");
+                        $this->session->inputMessage("success", "Registration Success", true);
+                        redirect('/src/View/register/', false);
                     } else {
                         $this->session->inputMessage("error", "Registration Failed");
                     }
