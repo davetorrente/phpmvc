@@ -13,10 +13,6 @@ class UserController extends BaseController
         parent::__construct($session, $this);
         $this->User = new UserModel($database);
     }
-    public function beforeFilter()
-    {
-        parent::beforeFilter();
-    }
     /**
      * User login method
      * login existing user account
@@ -24,13 +20,20 @@ class UserController extends BaseController
     */
     public function login()
     {
+        if ($this->session->isUserLoggedIn(true)) {
+            redirect('/src/View/home/', false);
+        }
         if (isset($_POST['login'])) {
-            $user = $this->User->authenticate($_POST['username'], md5($_POST['password']));
-            if ($user !== false) {
-                $this->session->login($user[0]['id']);
-                redirect('/src/View/home/', false);
+            if (isset($_POST['email']) && isset($_POST['password'])) {
+                $user = $this->User->authenticate($_POST['email'], md5($_POST['password']));
+                if ($user !== false) {
+                    $this->session->login($user);
+                    redirect('/src/View/home/', false);
+                } else {
+                    $this->session->inputMessage("login", "Invalid username or password");
+                }
             } else {
-                $this->session->inputMessage("error", "Invalid username or password");
+                $this->session->inputMessage("login", "All fields are required.");
             }
         }
     }
@@ -41,23 +44,49 @@ class UserController extends BaseController
     */
     public function register()
     {
+        if ($this->session->isUserLoggedIn(true)) {
+            redirect('/src/View/home/', false);
+        }
         if (isset($_POST['register'])) {
             $_POST['time'] = makeDate();
-            if (empty($_POST['username']) || empty($_POST['password'])) {
-                $this->session->inputMessage("error", "All fields are required");
+            if (empty($_POST['email']) || empty($_POST['password']) || empty($_POST['username']) || empty($_POST['password']) || empty($_POST['confirm_password'])) {
+                $this->session->inputMessage("register", "All fields are required");
             } else {
-                if ($this->User->checkExists('username', $_POST['username'])) {
-                    $this->session->inputMessage("error", "Username is already exists");
+                $validPassword = $this->User->checkMatchPassword($_POST['password'], $_POST['confirm_password']);
+                $emailExists = $this->User->checkExists('email', $_POST['email']);
+                if (!$validPassword || $emailExists) {
+                    if ($emailExists) {
+                        $this->session->inputMessage("email", "Email is already exists");
+                    } elseif (!$validPassword) {
+                        $this->session->inputMessage("password", "Password not matched.");
+                    }
                 } else {
-                    if ($this->User->create($_POST)) {
-                        $this->session->inputMessage("success", "Registration Success", true);
+                    $data = $_POST;
+                    if (!empty($_FILES['user_pic'])) {
+                        $picName = explode('.', $_FILES['user_pic']['name']);
+                        $ext = end($picName);
+                        $dir = './../../public/images/user/';
+                        $filenameSaved = imageSave($_FILES['user_pic']['tmp_name'], $dir, $ext);
+                        if ($filenameSaved) {
+                            $data['pic_name'] = $filenameSaved;
+                        }
+                    }
+                    if ($this->User->create($data)) {
+                        $this->session->inputMessage("register", "Registration Success", true);
                         redirect('/src/View/register/', false);
                     } else {
-                        $this->session->inputMessage("error", "Registration Failed");
+                        $this->session->inputMessage("register", "Registration Failed");
                     }
                 }
             }
         }
+    }
+    public function getUsers()
+    {
+        $this->User->database->query("SELECT * FROM users");
+        $users = $this->User->database->resultset();
+
+        return $users;
     }
 }
 $user = new UserController($database, $session);

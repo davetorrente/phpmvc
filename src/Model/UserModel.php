@@ -21,8 +21,10 @@ class UserModel extends AppModel
     {
         $username = $data['username'];
         $password = md5($data['password']);
+        $email = $data['email'];
         $time = $data['time'];
-        $this->database->query("INSERT INTO users (username, password, created, modified) VALUES('{$username}', '{$password}', '{$time}', '{$time}')");
+        $picName = $data['pic_name'];
+        $this->database->query("INSERT INTO users (username, password, email, pic_name, created, modified) VALUES('{$username}', '{$password}', '{$email}', '{$picName}', '{$time}', '{$time}')");
 
         if ($this->database->execute()) {
             return true;
@@ -51,11 +53,27 @@ class UserModel extends AppModel
      * @param string $password table field
      * @return array user or bool false
     */
-    public function authenticate($username, $password)
+    public function authenticate($email, $password)
     {
-        $this->database->query("SELECT * FROM users WHERE username = '{$username}' and password = '{$password}'");
+        $this->database->query("SELECT * FROM users WHERE email = '{$email}' and password = '{$password}'");
         $user = $this->database->resultset();
+
         return !empty($user) ? $user : false;
     }
 
+     /**
+     * User checkMatchPassword method
+     * authenticate user record
+     * @param string $username table field
+     * @param string $password table field
+     * @return array user or bool false
+    */
+    public function checkMatchPassword($password, $confirmPassword)
+    {
+        if ($password == $confirmPassword) {
+            return true;
+        }
+
+        return false;
+    }
 }

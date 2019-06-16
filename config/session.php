@@ -5,6 +5,8 @@ class Session
 {
     public $message;
     private $userIsLoggedIn = false;
+    public $controllerMethod = [];
+    public $authUser;
     public function __construct()
     {
         $this->userLoginSetup();
@@ -15,13 +17,13 @@ class Session
     {
         return $this->userIsLoggedIn;
     }
-    public function login($userId)
+    public function login($user)
     {
-        $_SESSION['userId'] = $userId;
+        $_SESSION['user'] = $user;
     }
     private function userLoginSetup()
     {
-        if (isset($_SESSION['userId'])) {
+        if (isset($_SESSION['user'])) {
             $this->userIsLoggedIn = true;
         } else {
             $this->userIsLoggedIn = false;
@@ -47,7 +49,7 @@ class Session
     {
         if (isset($_SESSION['msg'])) {
             $this->message = $_SESSION['msg'];
-                unset($_SESSION['msg']);
+            unset($_SESSION['msg']);
         } else {
             return $this->message;
         }
