@@ -75,7 +75,7 @@
 <!-- /.login-box -->
 
 <!-- jQuery 3 -->
-<script src="./../../../public/js/jquery.min.js"></script>t>
+<script src="./../../../public/js/jquery.min.js"></script>
 <!-- Bootstrap 3.3.7 -->
 <script src="./../../../public/js/bootstrap.min.js"></script>
 <!-- iCheck -->
