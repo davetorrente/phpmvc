@@ -34,9 +34,9 @@
 
   <div class="register-box-body">
     <p class="login-box-msg">Register a new membership</p>
-    <?php if (isset($user->session->message) && !empty($user->session->message)) : ?>
+    <?php if (isset($this->viewData['errors']) && !empty($this->viewData['errors'])) : ?>
         <span>
-            <?php foreach ($user->session->message as $message) : ?>
+            <?php foreach ($this->viewData['errors'] as $message) : ?>
                 <?php echo $message; ?>
                 <br>
             <?php endforeach; ?>
@@ -70,7 +70,7 @@
         <!-- /.col -->
       </div>
     </form>
-    <a href="/src/View/login/" class="text-center">I already have a membership</a>
+    <a href="/user/login/" class="text-center">I already have a membership</a>
   </div>
   <!-- /.form-box -->
 </div>

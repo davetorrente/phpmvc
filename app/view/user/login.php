@@ -34,14 +34,11 @@
   <!-- /.login-logo -->
   <div class="login-box-body">
     <p class="login-box-msg">Sign in to start your session</p>
-<!--     <?php if (isset($user->session->message) && !empty($user->session->message)) : ?>
+    <?php if (isset($this->viewData['error']) && !empty($this->viewData['error'])) : ?>
         <span>
-            <?php foreach ($user->session->message as $message) : ?>
-                <?php echo $message; ?>
-                <br>
-            <?php endforeach; ?>
+            <?php echo $this->viewData['error']; ?>
         </span>
-    <?php endif; ?> -->
+    <?php endif; ?>
     <form method="post">
       <div class="form-group has-feedback">
         <input type="email" class="form-control" placeholder="Email" value="<?= isset($_POST['email']) ? $_POST['email'] : ''; ?>" name="email" novalidate>
